@@ -1,0 +1,179 @@
+<html ng-app="recordingApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <link rel="shortcut icon" href="/static/images/speaker.png">
+    <link href="node_modules/jquery-toast-plugin/dist/jquery.toast.min.css" rel="stylesheet">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+    <link rel="stylesheet" href="/static/css/main.css">
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+
+
+
+
+    <title>Genesys PureCloud Recordings</title>
+
+</head>
+
+<body ng-app ng-controller="purecloudController as analyticsItems">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <script src="https://sdk-cdn.mypurecloud.com/javascript/51.0.0/purecloud-platform-client-v2.min.js"></script>
+    <script src="node_modules/jquery-toast-plugin/dist/jquery.toast.min.js"></script>
+    <script src="node_modules/js-cookie/src/js.cookie.js"></script>
+
+    <script src="static/js/purecloud.js"></script>
+    <script src="static/js/notifications.js"></script>
+
+    <script src="purecloud.js"></script>
+
+
+    <div align="right"><button id="btnDeleteToken" type="button" class="badge badge-pill badge-secondary">force
+            relogin</button>&nbsp;&nbsp;
+    </div>
+
+    <div class="alert alert-light fade show" role="alert">
+        <center>Genesys PureCloud Recordings <small>(<label id="orgDetails" type="text"
+                    aria-describedby="basic-addon3">loading...</label>)</small>
+        </center>
+    </div>
+
+
+
+    <script>
+        // Remove All user's Tokens
+        $("#btnDeleteToken").click(() => {
+            deleteTokenforUserId();
+        });
+    </script>
+
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status" id="spinnerMain">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <br>
+
+    <!--
+        Test Area
+    -->
+  
+
+    <div class="container">
+      <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Remote</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Duration</th>
+                    <th scope="col">Direction</th>
+                    <th scope="col">Queue</th>
+                    <th scope="col">Wrap-up</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in analyticsItems.conversations">
+                    <td>{{item.originatingDirection == "inbound" ? item.participants[0].sessions[0].ani :item.participants[0].sessions[0].dnis}}
+                    </td>
+                    <td>{{item.conversationStart}}</td>
+                    <td>-</td>
+                    <td>{{item.originatingDirection}}</td>
+                    <td>-</td>
+                    <td>-</td>
+
+                    <td> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"
+                            ng-click="setCurrentConversation(item)">
+                            >
+                        </button>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+
+
+
+
+    <!-- Media Player -->
+    <!-- pre-recorded audio descriptions -->
+    <!--
+    <par>
+        <audio id="a1" controls>
+            <source
+                src="https://prod-euw1-recording-playback.s3-eu-west-1.amazonaws.com/MediaCache/c9be05bb-9684-4a6e-899b-0f4beabcf8d8/7eafffb3-d81c-41c3-be88-553a9f81aff4/isDownloading%3Atrue_format%3AWEBM_width%3A640_height%3A256_color%3A2719929_version%3Av2/AUDIO_S.WEBM?response-content-disposition=attachment%3Bfilename%3D%22audio.WEBM%22&X-Amz-Security-Token=AgoJb3JpZ2luX2VjENT%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMSJGMEQCIGIjG1jH2s4M1gr7Z0%2FtPpJr3OGvIKX2IeKttYGXHzGuAiBktlhswkATy0%2B%2Byt580P4GyP8DIRu11p6EZLvB6D83IyraAwgdEAAaDDc2NTYyODk4NTQ3MSIMtGWWFRVIGxVeFmg6KrcDJX1shHy2gipMYpp9EzDGHXoKmjk1phri8BYWBN75cuhD379E9A3LktWYCc2ehyR6KCUBXMs2qzSd782B7dojd3F5qOMJcBqcnGSswZBSl%2B%2Fih6PZpbIG6jvyEHR7BZzBHhjGhQ5zuPMuliOurdGKxXSujLrmeH8%2BMhTOYvZzA2IXV3qIt3GowxIqYoV4pi%2FsGPEmZALsbrvrV%2F435YvZ9jRu5oWf7d51tI%2Fyx4u70oSmQZNazt0Pr0sPEr%2BYHntELBVrfV%2BNNl4hJlFeWoHrde7u6WdmAUQ7lQ9B2VtXG%2BcajZV9toPO923TVwiI17HHjZhbEoeveZYN1EUCZunZmjmtLFjvv13pxCspZ4Hyms6FjHe5hwCRu%2FLznoXBO9%2FBrd80Q%2BSADqQuVjB7tMINolDSODThES1naFEeVpYFlnDN%2FgAWJIiJ3SdzpCm3YKpWjfFVwuMwXgCLq%2BEto8qUBhW%2BzEFUn%2BoOlZLlxwp55%2BKzlb6ukVMdEDly%2B8sMhX4mMIVf2edCrOxlTMvzh8%2BnbDM%2BJ%2B3JRFdkOMVp5iAfwtX2VyDYRvU5%2BcRiXrs3kfQuxmhW%2FS2XOTCB9MnoBTq1AdWH4DI3%2Buo%2BSS6xopbceYuAns2MTm3MYxbkSKVtxei3umTCN2TURoGtiDZHCxU1VQz3HR1KW06XVOzmNHo%2BGcPEipmOsqw7R4aaBx9cW8X%2BwkPslBqphXCThZ93k8fhNU5Y%2F1LUKuQRKnvvMLGOcRlfFJiHS74ZHhUI2LtY43bnZr08aSt60xaU7cghz3yRF8S7p5NzBFe2Lwuoi7h1yE69ADXyok6WLCxQR4Pad%2FAFFQkauKg%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20190625T212048Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Credential=ASIA3EQYLGB7SLK7IXJ2%2F20190625%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Signature=c74e47cc4e3a9a58c487876d50f0a5d7b23317b9e040fb4baf6677d42fb4e949">
+        </audio>
+        <audio id="a2">
+            <source
+                src="https://prod-euw1-recording-playback.s3-eu-west-1.amazonaws.com/MediaCache/c9be05bb-9684-4a6e-899b-0f4beabcf8d8/7eafffb3-d81c-41c3-be88-553a9f81aff4/isDownloading%3Afalse_format%3AWEBM_width%3A640_height%3A256_color%3A2719929_version%3Av2/AUDIO_1.WEBM?response-content-disposition=attachment%3Bfilename%3D%22MediaCache%2Fc9be05bb-9684-4a6e-899b-0f4beabcf8d8%2F7eafffb3-d81c-41c3-be88-553a9f81aff4%2FisDownloading%3Afalse_format%3AWEBM_width%3A640_height%3A256_color%3A2719929_version%3Av2%2FAUDIO_1.WEBM%22&X-Amz-Security-Token=AgoJb3JpZ2luX2VjENT%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMSJHMEUCIQD13sjszA3s2ODyXlG20Uc%2BioP2RNpcQdMOEnzr3R2rVwIgUdUXHIx2B%2BwdyyKUr7P8MDihep2endfYxl8wko54lF8q2gMIHRAAGgw3NjU2Mjg5ODU0NzEiDACFh3IoGG8XvCec0Sq3Ax8fD8rYiTuaziKO94NX83y4DonXOAC8%2FKntA5jNz%2FrrDxEVyiU%2BMQJ2gradc%2Bwcep31Y5oPjAyRmKbcQ8W5GrWJCGMTb%2FooKiZv94xHcIN%2F4hy286kpREuzmwkb5DfCn%2FOA3SaN6vGGDUPjz55z5RE6COuOlCxYqq%2FX0FCiqGIGLi%2FEZoxZ3SUzhK3eSXNb%2B%2Bh%2Far49eqnvYfXfTJAS4z%2F1QPCq%2BIYIbo%2B5ODS4GKhGa%2Bp07cw84KxMkC1CnMAHcJ8S5WQhH6d8VqQf2lPB8Ng%2Bpl%2FUFq2nEXHT%2Br%2FWVRWe3WAYesOic67QzUrx%2BliSevOfyKOhN3IV9tAjMTqEnKuRcZI0FpgGdGNH%2Fj%2F2zRBq%2F%2FxKwt4lFpI0JIaSmxxTuP5cdqzYwebjHvgNRTJdxtlzxpSnjrZkuQuis3t%2FY4cCF9guEmMwb28Y6SaciS%2BtOKHgQldl0kV02ePuH3akNPQh7UPZK3CV42H9WVmhvS391RwhKggiqn0yvE4y2oWM7SqoO1QqU8UORSoAu66W3DXkBiH022s50QtxE0VUK%2F5uRfZpzCO8sVFu5XSuOaeeJT4LhnlDrhAwsPjJ6AU6tAHKGa3mG2H1UyVFcc9ogzsM7MGUs7Tp%2FZH1K8zVcvRm%2FrJ5WnIgGsc6CE4zDCPYDM8ZOehsonetCi5NP2iW8JHZ51cQ1gWUPGzDujlrY2C3LaS15nJ0MLnBpsuPIVe5hx4e0SVZ%2FIH6gK0EPJXzW78MIyYIeHuxk%2BSiuEqWB2g%2FHNQcNLvxTG1319EZLka%2B9wLoUxjRjr7ftK8vEBUHqwNMNTBv09DYZyTRYDV976pUNiFEsrE%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20190625T203158Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Credential=ASIA3EQYLGB7X6VW6W5A%2F20190625%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Signature=cb84e1dbb3cabf7f645bddf2187070678351db2acfc2630a15fc80961feea263">
+        </audio>
+    </par>  
+    -->
+
+    <script>
+       // document.getElementById('a2').play()
+       // document.getElementById('a1').play()
+    </script>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Single conversation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+
+
+                    <p>conversationId: {{analyticsItems.selectedConversation.conversationId}}</p>
+                    <p>fileState: {{analyticsItems.audioFileState}} </p>
+                    <br>
+
+                    <div class="row">
+                        <div class="column" style="vertical-align:middle;">
+                            <!-- mediaPlayer section -->
+                            <audio id="audioPlayer" controls="controls">
+                                <source src="{{analyticsItems.audioFile}}" type="audio/mp3">
+                            </audio>
+                        </div>
+                        <div class="column"
+                            style="vertical-align:middle; text-align: right; padding-top: 12px; padding-left: 12px">
+                            <!-- spinner section-->
+                            <div class="d-flex justify-content-center">
+                                <div class="spinner-border" role="status" id="spinner">
+                                    <span class="sr-only"> Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        ng-click="analyticsItems.clearModal();">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>
