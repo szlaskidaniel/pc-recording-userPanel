@@ -2,7 +2,7 @@ angular.module('recordingApp', [])
   .controller('purecloudController', function ($scope) {
     var _self = this;
 
-    let redirectUri = 'https://localhost/index.html';
+    let redirectUri = 'https://szlaskidaniel.github.io/pc-recording-userPanel/index.html';
     let clientId = '89f29367-dc0e-4fd0-9f55-7175a73ee600';
     let environment = 'mypurecloud.ie'
     const platformClient = require('platformClient');
