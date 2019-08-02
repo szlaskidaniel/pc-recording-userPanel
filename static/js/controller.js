@@ -8,6 +8,8 @@ angular.module("recordingApp", []).controller("purecloudController", [
     let redirectUri = "http://localhost:5500/index.html"; // 'https://szlaskidaniel.github.io/pc-recording-userPanel/index.html'
     let clientId = "37a72847-7e72-4c35-8234-beca1d0f267e";
     let getConversationsApiKey = "qzuq7LlZS6YBYP9BiyixPRcBY3mTs9adbiP7yETHbd2WgacIhOi0aQ%3D%3D";
+    let getMediaInformationApiKey = "CeeXdI217ghOKpHpi3mfgtnpBA9Cd5Xs7dTSt9yTAeGV2S%2Fqv6cFFA%3D%3D";
+    let getRecordingStreamApiKey = "zBOVDwL94KVTEe4jR16dGDMaW1p36t8oS0vhar9Qc6%2FDAClCgma8vA%3D%3D";
 
     init();
 
@@ -44,6 +46,108 @@ angular.module("recordingApp", []).controller("purecloudController", [
 
     $scope.showPrevious = function() {
       return $scope.pageNumber > 1;
+    };
+
+    $scope.setCurrentConversation = function(item) {
+      _self.selectedConversation = item;
+      console.log(`setCurrentConversation to ${item.conversationId}`);
+      getMediaInformation(item.conversationId);
+    };
+
+    function getMediaInformation(_conversationId) {
+      console.log(`getMediaInformation for conversationId ${_conversationId}`);
+
+      $.ajax({
+        url: `https://recordercollector.azurewebsites.net/api/getMediaInformation?code=${getMediaInformationApiKey}`,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+          token: localStorage.getItem("ms_id_token"),
+          conversationId: _conversationId
+        })
+      })
+        .done(async (data, textStatus, jqXHR) => {
+          showSpinner("spinner", false);
+          console.log("textStatus:", textStatus);
+          console.log("jqXHR:", jqXHR);
+          console.log("Data:", data);
+          data = JSON.parse(data);
+          console.log("Conv Details:", data.conversationDetails);
+          _self.recordings = data.conversationDetails;
+          $scope.$applyAsync();
+
+          $.each(_self.recordings, async (i, recording) => {
+            let file = await getRecordingStream(recording.conversationId, recording.id);
+            recording.file = JSON.parse(file).url + "&xyz=" + parseInt(Math.random() * 10000);
+            console.log("Recording file:", recording.file);
+            switch (recording.media) {
+              case "audio":
+                $("<audio/>", { controls: "controls", preload: "auto", src: recording.file, controlsList: "nodownload" }).appendTo("#" + recording.id);
+                break;
+              case "screen":
+                $("<video/>", { controls: "controls", preload: "auto", src: recording.file, controlsList: "nodownload", style: "width: 100%; height: auto; margin:0 auto; frameborder:0;" }).appendTo("#" + recording.id);
+                break;
+              default:
+                break;
+            }
+            // $scope.$apply();
+            // $("#player").attr("src", recording.file);
+          });
+        })
+        .fail((jqXHR, textStatus, errorThrown) => {
+          showSpinner("spinner", false);
+          console.error("textStatus:", textStatus);
+          console.error("jqXHR:", jqXHR);
+          console.error("errorThrown:", errorThrown);
+
+          if (jqXHR.status == 401 || jqXHR.responseText.includes("invalid")) {
+            // Try to login again
+            $scope.login();
+          }
+        });
+    }
+
+    async function getRecordingStream(_conversationId, _recordingId) {
+      console.log(`getRecordingConversationId for conversationId ${_conversationId} & recordingId ${_recordingId}`);
+
+      return await $.ajax({
+        url: `https://recordercollector.azurewebsites.net/api/getRecordingStream?code=${getRecordingStreamApiKey}`,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+          token: localStorage.getItem("ms_id_token"),
+          conversationId: _conversationId,
+          recordingId: _recordingId
+        })
+      })
+        .done((data, textStatus, jqXHR) => {
+          showSpinner("spinnerMain", false);
+          console.log("textStatus:", textStatus);
+          console.log("jqXHR:", jqXHR);
+          console.log("Data:", data);
+          data = JSON.parse(data);
+          return data.url;
+        })
+        .fail((jqXHR, textStatus, errorThrown) => {
+          showSpinner("spinnerMain", false);
+          console.error("textStatus:", textStatus);
+          console.error("jqXHR:", jqXHR);
+          console.error("errorThrown:", errorThrown);
+
+          if (jqXHR.status == 401 || jqXHR.responseText.includes("invalid")) {
+            // Try to login again
+            $scope.login();
+          }
+        });
+    }
+
+    _self.clearModal = function() {
+      console.log("Clear modal!");
+
+      // Clear previous AudioFile // TODO: should be executed when Modal closes
+      _self.audioFile = "";
+      $scope.$applyAsync();
+      $("#audioPlayer").load();
     };
 
     $scope.getRecordings = function() {
@@ -102,6 +206,15 @@ angular.module("recordingApp", []).controller("purecloudController", [
         return result;
       }, {});
     }
+
+    _self.clearModal = function() {
+      console.log("Clear modal!");
+
+      // Clear previous AudioFile // TODO: should be executed when Modal closes
+      _self.audioFile = "";
+      $scope.$applyAsync();
+      $("#audioPlayer").load();
+    };
 
     function showSpinner(_spinner, _bool) {
       if (_bool) {

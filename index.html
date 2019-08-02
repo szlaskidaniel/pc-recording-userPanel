@@ -99,35 +99,43 @@
 
     <!-- Modal -->
     <div class="modal fade" id="conversationModal" tabindex="-1" role="dialog" aria-labelledby="conversationModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="conversationModalLabel">Single conversation</h5>
+            <h5 class="modal-title" id="conversationModalLabel">Recordings</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            <p>conversationId: {{ analyticsItems.selectedConversation.conversationId }}</p>
-            <p>fileState: {{ analyticsItems.audioFileState }}</p>
-            <br />
-
-            <div class="row">
-              <div class="column" style="vertical-align:middle;">
-                <!-- mediaPlayer section -->
-                <audio id="audioPlayer" controls="controls">
-                  <source src="{{ analyticsItems.audioFile }}" type="audio/mp3" />
-                </audio>
-              </div>
-              <div class="column" style="vertical-align:middle; text-align: right; padding-top: 12px; padding-left: 12px">
-                <!-- spinner section-->
-                <div class="d-flex justify-content-center">
-                  <div class="spinner-border" role="status" id="spinner">
-                    <span class="sr-only"> Loading...</span>
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Conversation Id</th>
+                  <th scope="col">Media</th>
+                  <th scope="col">File State</th>
+                  <th scope="col">Player</th>
+                </tr>
+                <div class="column" style="vertical-align:middle; text-align: right; padding-top: 12px; padding-left: 12px">
+                  <!-- spinner section-->
+                  <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status" id="spinner">
+                      <span class="sr-only"> Loading...</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </thead>
+              <tbody>
+                <tr ng-repeat="recording in analyticsItems.recordings">
+                  <td>{{ recording.conversationId }}</td>
+                  <td>{{ recording.media }}</td>
+                  <td>{{ recording.fileState }}</td>
+                  <td>
+                    <div id="{{ recording.id }}" class="row"></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal" ng-click="analyticsItems.clearModal();">Close</button>
