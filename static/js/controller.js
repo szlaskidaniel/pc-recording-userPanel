@@ -5,8 +5,8 @@ angular.module("recordingApp", []).controller("recordingsController", [
     $scope.pageNumber = 1; // Default page number
 
     let tenantId = "785ce69c-90cf-4dc7-a882-eaf312d1d15d"; // Microsoft AD Tenant Id
-    let redirectUri = "https://szlaskidaniel.github.io/pc-recording-userPanel/index.html"; // This should be the full path to this page. Will be used by Microsoft to redirect to your site once authenticated
     let clientId = "37a72847-7e72-4c35-8234-beca1d0f267e"; // Azure application client id
+    let redirectUri = "https://szlaskidaniel.github.io/pc-recording-userPanel/index.html"; // This should be the full path to the index.html. Will be used by Microsoft to redirect to your site once authenticated. This should match the redirect uri you have set in your Azure client app.
     let getConversationsApiKey = "qzuq7LlZS6YBYP9BiyixPRcBY3mTs9adbiP7yETHbd2WgacIhOi0aQ%3D%3D"; // API Key for the /getConversations Azure function
     let getMediaInformationApiKey = "CeeXdI217ghOKpHpi3mfgtnpBA9Cd5Xs7dTSt9yTAeGV2S%2Fqv6cFFA%3D%3D"; // API Key for the /getMediaInformation Azure function
     let getRecordingStreamApiKey = "zBOVDwL94KVTEe4jR16dGDMaW1p36t8oS0vhar9Qc6%2FDAClCgma8vA%3D%3D"; // API Key for the /getRecording Azure function
