@@ -28,4 +28,4 @@ Full instructions on how to implement the Azure functions are [here](https://bit
 - Create Azure functions in your own Azure account and retrieve the API keys
 - Update the API keys in the `static/js/controller.js` file
 - Update the redirectUri variable with the path to the `index.html` file
-- Add code to match the AD groups with PureCloud divisions
+- Read AD groups and pass them to the getConversations function (at the moment, using hardcoded values)
