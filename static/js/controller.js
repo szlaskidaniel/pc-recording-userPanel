@@ -45,6 +45,7 @@ angular.module("recordingApp", []).controller("recordingsController", [
 
     //#region Microsoft Authentication
 
+    // Web visitor is automatically redirected at the following url to authenticate against AD
     $scope.login = function() {
       window.location.href = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=id_token token&redirect_uri=${encodeURIComponent(redirectUri)}&response_mode=fragment&scope=openid profile email user.read&claim=groups&state=12345&nonce=678910`;
     };
