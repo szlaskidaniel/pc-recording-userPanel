@@ -146,7 +146,7 @@ angular.module("recordingApp", []).controller("recordingsController", [
                 break;
               case "screen":
                 // Add control for video file
-                $("<video/>", { controls: "controls", preload: "auto", src: "data:video;base64," + recording.file, controlsList: "nodownload", style: "width: 100%; height: auto; margin:0 auto; frameborder:0;" }).appendTo("#" + recording.id);
+                $("<video/>", { controls: "controls", preload: "auto", src: "data:video/mp4;base64," + recording.file, controlsList: "nodownload", style: "width: 100%; height: auto; margin:0 auto; frameborder:0;" }).appendTo("#" + recording.id);
                 showSpinner("spinner" + recording.id, false);
                 break;
               default:
