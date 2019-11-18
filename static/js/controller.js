@@ -179,11 +179,16 @@ angular.module("recordingApp", []).controller("recordingsController", [
       })
         .done((data, textStatus, jqXHR) => {
           showSpinner("spinnerMain", false);
+          /*
           console.log("textStatus:", textStatus);
           console.log("jqXHR:", jqXHR);
           console.log("Data:", data);
           data = JSON.parse(data);
           return data.url;
+          */
+            console.log('DONE!');
+            $("<audio/>", { controls: "controls", src: "data:audio/mp3;base64," + data }).appendTo("#" + "test");
+
         })
         .fail((jqXHR, textStatus, errorThrown) => {
           showSpinner("spinnerMain", false);
