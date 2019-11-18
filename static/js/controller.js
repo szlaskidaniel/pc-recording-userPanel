@@ -131,8 +131,11 @@ angular.module("recordingApp", []).controller("recordingsController", [
 
           $.each(_self.recordings, async (i, recording) => {
             let file = await getRecordingStream(recording.conversationId, recording.id);
-            recording.file = JSON.parse(file).url + "&xyz=" + parseInt(Math.random() * 10000);
-            console.log("Recording file:", recording.file);
+            //recording.file = JSON.parse(file).url + "&xyz=" + parseInt(Math.random() * 10000);
+            recording.file = file;
+            
+            //console.log("Recording file:", recording.file);
+            /*
             switch (recording.media) {
               case "audio":
                 // Add control for audio file
@@ -148,6 +151,10 @@ angular.module("recordingApp", []).controller("recordingsController", [
                 alert(`Media ${recording.media} not supported`);
                 break;
             }
+            */
+             $("<video/>", { controls: "controls", preload: "auto", src: "data:video/mp3;base64," + recording.file, controlsList: "nodownload", style: "width: 100%; height: auto; margin:0 auto; frameborder:0;" }).appendTo("#" + recording.id);
+             showSpinner("spinner" + recording.id, false);
+               
           });
         })
         .fail((jqXHR, textStatus, errorThrown) => {
@@ -186,8 +193,7 @@ angular.module("recordingApp", []).controller("recordingsController", [
           data = JSON.parse(data);
           return data.url;
           */
-            console.log('DONE!');
-            $("<audio/>", { controls: "controls", src: "data:audio/mp3;base64," + data }).appendTo("#" + "test");
+          return data;
 
         })
         .fail((jqXHR, textStatus, errorThrown) => {
