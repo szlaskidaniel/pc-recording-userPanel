@@ -137,6 +137,7 @@ angular.module("recordingApp", []).controller("recordingsController", [
             recording.media = tmpFile.media;
                         
             //console.log("Recording file:", recording.file);
+            console.log("Try to load media file to HTML component");
             
             switch (recording.media) {
               case "audio":
@@ -186,9 +187,10 @@ angular.module("recordingApp", []).controller("recordingsController", [
       })
         .done((data, textStatus, jqXHR) => {
           showSpinner("spinnerMain", false);
-          /*
+          
           console.log("textStatus:", textStatus);
           console.log("jqXHR:", jqXHR);
+          /*  
           console.log("Data:", data);
           data = JSON.parse(data);
           return data.url;
