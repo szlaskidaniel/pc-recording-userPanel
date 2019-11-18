@@ -152,7 +152,7 @@ angular.module("recordingApp", []).controller("recordingsController", [
                 break;
             }
             */
-             $("<video/>", { controls: "controls", preload: "auto", src: "data:audio/mp3;base64," + recording.file, controlsList: "nodownload", style: "width: 100%; height: auto; margin:0 auto; frameborder:0;" }).appendTo("#" + recording.id);
+             $("<video/>", { controls: "controls", preload: "auto", src: "base64," + recording.file, controlsList: "nodownload", style: "width: 100%; height: auto; margin:0 auto; frameborder:0;" }).appendTo("#" + recording.id);
              showSpinner("spinner" + recording.id, false);
                
           });
